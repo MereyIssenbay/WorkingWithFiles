@@ -1,7 +1,7 @@
 import os
 
 path = 'D:\\Python\\test'
-dirList = os.listdir(path)
-print(dirList)
-for i in dirList:
-    print(i,type(i),path+'\\'+i,os.path.isdir(path+'\\'+i))
+for i in os.scandir(path):
+    if i.is_file() and i.name.endswith('.txt'):
+        print(i.name)
+
