@@ -14,17 +14,24 @@ def main():
             opp = int(input("Choose the operation: "))
             match opp:
                 case 1:
-                    create_file()
+                    file_name = input("Give a name for file: ").strip(" ")
+                    wr = input("And give text that will be recorded to this file: ")
+                    create_file(file_name, wr)
+                    print("File had been created!")
                 case 2:
-                    delete_file()
+                    file_name = input("Which file do you want to delete? ").strip(" ")
+                    delete_file(file_name)
                 case 3:
-                    create_folder()
+                    folder_name = input("Give a name for folder: ").strip(" ")
+                    create_folder(folder_name)
                 case 4:
-                    delete_folder()
+                    folder_name = input("Which folder do you want to delete?").strip(" ")
+                    delete_folder(folder_name)
                 case 5:
-                    list_folder()
+                    folder_name = input("Which folder's entries do you want to get? ").strip(" ")
+                    list_folder(folder_name)
                 case 6:
-                    open_folder()
+                    replace_file()
                 case 7:
                     print("Good bye!")
                     return False
@@ -34,30 +41,24 @@ def main():
             print("You need to choose one of the given options")
 
 
-def create_file():
-    file_name = input("Give a name for file: ").strip(" ")
-    wr = input("And give text that will be recorded to this file: ")
+def create_file(file_name, wr):
     file = open(f"{file_name}.txt", "w")
     file.write(wr)
     file.close()
     shutil.move(f"D:\\Python\\{file_name}.txt", "D:\\Python\\test")
-    print("File had been created!")
-def delete_file():
-    file_name = input("Which file do you want to delete? ").strip(" ")
+
+def delete_file(file_name):
     if path.exists(f"D:\\Python\\test\\{file_name}.txt"):
         os.remove(f"D:\\Python\\test\\{file_name}.txt")
         print("File removed.")
     else:
         print("This file does not exist.")
 
-def create_folder():
-    folder_name = input("Give a name for folder: ").strip(" ")
+def create_folder(folder_name):
     os.mkdir(f"D:\\Python\\test\\{folder_name}")
     print("Folder had been created!")
 
-
-def delete_folder():
-    folder_name = input("Which folder do you want to delete?").strip(" ")
+def delete_folder(folder_name):
     if is_empty(f"D:\\Python\\test\\{folder_name}"):
         os.rmdir(f"D:\\Python\\test\\{folder_name}")
         print("Folder removed.")
@@ -69,8 +70,7 @@ def delete_folder():
         else:
             print("Folder is not removed.")
 
-def list_folder():
-    folder_name = input("Which folder's entries do you want to get? ").strip(" ")
+def list_folder(folder_name):
     if path.exists(f"D:\\Python\\test\\{folder_name}"):
         if is_empty(f"D:\\Python\\test\\{folder_name}"):
             print(f"Folder {folder_name} is empty.")
@@ -82,8 +82,8 @@ def list_folder():
         print(f"Here is the list in the folder 'test'")
         for i in os.scandir(f"D:\\Python\\test"):
             print(i.name)
-def open_folder():
-    print("openFolder()")
+def replace_file():
+    print("replace")
 
 
 def is_empty(folder_path):
