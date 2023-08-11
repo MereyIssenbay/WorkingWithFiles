@@ -35,45 +35,43 @@ def main():
 
 
 def create_file():
-    fileName = input("Give a name for file: ").strip(" ")
+    file_name = input("Give a name for file: ").strip(" ")
     wr = input("And give text that will be recorded to this file: ")
-    destination = input("Give folder name in which fila will be stored: ")
-    file = open(f"{fileName}.txt", "w")
+    destination_path = input("Give folder name in which file will be stored: ").strip(" ")
+    file = open(f"{file_name}.txt", "w")
     file.write(wr)
     file.close()
-    if destination != "test":
-        source_path = f"{fileName}.txt"
-        destination_path = f"D:\\Python\\test\\{destination}"
-        shutil.move(source_path, destination_path)
+    source_path = f"D:\\Python\\{file_name}.txt"
+    if path.exists(f"D:\\Python\\test\\{destination_path}"):
+        os.replace(source_path, destination_path)
+        print("File had been created!")
     else:
-        source_path = f"{fileName}.txt"
-        destination_path = "test"
-        shutil.move(source_path, destination_path)
-    print("File had been created!")
+        shutil.move(source_path, "D:\\Python\\test")
+        print("File had been created!")
 def delete_file():
-    file = input("Which file do you want to delete? ").strip(" ")
-    if path.exists(f"test/{file}.txt"):
-        os.remove(f"test/{file}.txt")
+    file_name = input("Which file do you want to delete? ").strip(" ")
+    if path.exists(f"D:\\Python\\test\\{file_name}.txt"):
+        os.remove(f"D:\\Python\\test\\{file_name}.txt")
         print("File removed.")
     else:
         print("This file does not exist.")
 
 def create_folder():
-    name = input("Give a name for folder: ").strip(" ")
-    os.mkdir(f"D:\\Python\\test\\{name}")
+    folder_name = input("Give a name for folder: ").strip(" ")
+    os.mkdir(f"D:\\Python\\test\\{folder_name}")
     print("Folder had been created!")
 
 
 def delete_folder():
-    name = input("Which folder do you want to delete?").strip(" ")
-    is_empty = os.stat(f"D:\\Python\\test\\{name}").st_size == 1
+    folder_name = input("Which folder do you want to delete?").strip(" ")
+    is_empty = os.stat(f"D:\\Python\\test\\{folder_name}").st_size == 1
     if is_empty:
-        os.rmdir(f"D:\\Python\\test\\{name}")
+        os.rmdir(f"D:\\Python\\test\\{folder_name}")
         print("Folder removed.")
     else:
         ans = input("Are you sure? Folder is not empty. y/n ").strip(" ")
         if ans == "Y" or ans == "y":
-            shutil.rmtree(f"D:\\Python\\test\\{name}")
+            shutil.rmtree(f"D:\\Python\\test\\{folder_name}")
             print("Folder removed.")
         else:
             print("Folder is not removed.")
