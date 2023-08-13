@@ -1,14 +1,14 @@
 import os
-from os import path
 import shutil
+import datetime
 def main():
     while(True):
-        print(" 1.Create file\n "
-              "2.Delete file\n "
-              "3.Create folder\n "
-              "4.Delete folder\n "
-              "5.Folder list\n "
-              "6.Replace file\n "
+        print("1.Create file\n"
+              "2.Delete file\n"
+              "3.Create folder\n"
+              "4.Delete folder\n"
+              "5.Folder list\n"
+              "6.Replace file\n"
               "7.Replace folder\n"
               "8.Quit")
         try:
@@ -45,7 +45,7 @@ def main():
                 case _:
                     print("INCORRECT OPTION")
         except ValueError:
-            print("You need to choose one of the given options")
+            print("You need to write integer number of operation.")
 
 
 def create_file(file_name, wr):
@@ -86,16 +86,9 @@ def list_folder(folder_name):
     folder_path = find_folder("D:\\Python\\test", folder_name)
 
     if folder_path:
-        if is_empty(folder_path):
-            print("Folder is empty.")
-        else:
-            print(f"Contents of folder '{folder_name}':")
-            for entry in os.scandir(folder_path):
-                print(entry.name)
+        list_info(folder_path)
     elif folder_name == "test":
-        print(f"Contents of folder '{folder_name}':")
-        for entry in os.scandir("D:\\Python\\test"):
-            print(entry.name)
+        list_info("D:\\Python\\test")
     else:
         print(f"Folder '{folder_name}' not found.")
     return None
@@ -143,6 +136,42 @@ def find_file(start_dir, file_name):
             if result:
                 return result
     return None
+
+
+def get_folder_size(folder_path):
+    total_size = 0
+    for dirpath, dirnames, filenames in os.walk(folder_path):
+        for filename in filenames:
+            file_path = os.path.join(dirpath, filename)
+            total_size += os.path.getsize(file_path)
+    return total_size
+
+
+def list_info(folder_path):
+    print(f"Folder: {folder_path}")
+    print(f"Total folder size: {get_folder_size(folder_path)} bytes")
+    print("Files:")
+
+    for dirpath, dirnames, filenames in os.walk(folder_path):
+        for filename in filenames:
+            file_path = os.path.join(dirpath, filename)
+            file_size = os.path.getsize(file_path)
+            file_type = os.path.splitext(filename)[1]
+            file_creation_time = datetime.datetime.fromtimestamp(os.path.getctime(file_path))
+
+            print(f"File name: {filename}")
+            print(f"File size: {file_size} bytes")
+            print(f"File type: {file_type}")
+            print(f"File creation time: {file_creation_time}")
+            print("-" * 30)
+        for dirname in dirnames:
+            dir_path = os.path.join(dirpath, dirname)
+            dir_size = f"{get_folder_size(dir_path)} bytes"
+            dir_creation_time = datetime.datetime.fromtimestamp(os.path.getctime(dir_path))
+            print(f"File name: {dirname}")
+            print(f"File size: {dir_size}")
+            print(f"File creation time: {dir_creation_time}")
+            print("-" * 30)
 
 def is_empty(folder_path):
     items = os.listdir(folder_path)
