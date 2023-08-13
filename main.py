@@ -172,7 +172,7 @@ def list_info(folder_path):
             print(f"File size: {dir_size}")
             print(f"File creation time: {dir_creation_time}")
             print("-" * 30)
-
+    return None
 def is_empty(folder_path):
     items = os.listdir(folder_path)
 
