@@ -9,7 +9,8 @@ def main():
               "4.Delete folder\n "
               "5.Folder list\n "
               "6.Replace file\n "
-              "7.Quit")
+              "7.Replace folder\n"
+              "8.Quit")
         try:
             opp = int(input("Choose the operation: "))
             match opp:
@@ -35,6 +36,10 @@ def main():
                     destination = input("Give folder name: ").strip(" ")
                     replace_file(file_name, destination)
                 case 7:
+                    folder_name = input("Give the folder name: ").strip(" ")
+                    destination = input("Give the destination name: ").strip(" ")
+                    replace_folder(folder_name, destination)
+                case 8:
                     print("Good bye!")
                     return False
                 case _:
@@ -87,6 +92,10 @@ def list_folder(folder_name):
             print(f"Contents of folder '{folder_name}':")
             for entry in os.scandir(folder_path):
                 print(entry.name)
+    elif folder_name == "test":
+        print(f"Contents of folder '{folder_name}':")
+        for entry in os.scandir("D:\\Python\\test"):
+            print(entry.name)
     else:
         print(f"Folder '{folder_name}' not found.")
     return None
@@ -101,6 +110,18 @@ def replace_file(file_name, destination):
         print(folder_path)
         print(file_path)
         print("The destination or file is not existing.")
+    return None
+
+def replace_folder(folder_name, destination):
+    folder_path = find_folder("D:\\Python\\test", folder_name)
+    folder_path2 = find_folder("D:\\Python\\test", destination)
+    if folder_path and folder_path2:
+        shutil.move(folder_path, folder_path2)
+        print("Folder replaced successfully!")
+    else:
+        print(folder_path)
+        print(folder_path2)
+        print("The destination or folder is not existing.")
     return None
 
 def find_folder(start_dir, folder_name):
