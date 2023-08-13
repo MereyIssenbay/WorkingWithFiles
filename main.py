@@ -50,8 +50,9 @@ def create_file(file_name, wr):
     shutil.move(f"D:\\Python\\{file_name}.txt", "D:\\Python\\test")
 
 def delete_file(file_name):
-    if path.exists(f"D:\\Python\\test\\{file_name}.txt"):
-        os.remove(f"D:\\Python\\test\\{file_name}.txt")
+    file_path = find_file("D:\\Python\\test", file_name)
+    if file_path:
+        os.remove(file_path)
         print("File removed.")
     else:
         print("This file does not exist.")
@@ -59,19 +60,22 @@ def delete_file(file_name):
 def create_folder(folder_name):
     os.mkdir(f"D:\\Python\\test\\{folder_name}")
     print("Folder had been created!")
+    return None
 
 def delete_folder(folder_name):
-
-    if is_empty(f"D:\\Python\\test\\{folder_name}"):
-        os.rmdir(f"D:\\Python\\test\\{folder_name}")
-        print("Folder removed.")
-    else:
-        ans = input("Are you sure? Folder is not empty. y/n ").strip(" ")
-        if ans == "Y" or ans == "y":
-            shutil.rmtree(f"D:\\Python\\test\\{folder_name}")
+    folder_path = find_folder("D:\\Python\\test", folder_name)
+    if folder_path:
+        if is_empty(folder_path):
+            os.rmdir(folder_path)
             print("Folder removed.")
         else:
-            print("Folder is not removed.")
+            ans = input("Are you sure? Folder is not empty. y/n ").strip(" ")
+            if ans == "Y" or ans == "y":
+                shutil.rmtree(folder_path)
+                print("Folder removed.")
+            else:
+                print("Folder is not removed.")
+    return None
 
 def list_folder(folder_name):
     folder_path = find_folder("D:\\Python\\test", folder_name)
@@ -85,6 +89,7 @@ def list_folder(folder_name):
                 print(entry.name)
     else:
         print(f"Folder '{folder_name}' not found.")
+    return None
 
 def replace_file(file_name, destination):
     folder_path = find_folder("D:\\Python\\test", destination)
@@ -96,6 +101,7 @@ def replace_file(file_name, destination):
         print(folder_path)
         print(file_path)
         print("The destination or file is not existing.")
+    return None
 
 def find_folder(start_dir, folder_name):
     for entry in os.scandir(start_dir):
@@ -116,6 +122,7 @@ def find_file(start_dir, file_name):
             if result:
                 return result
     return None
+
 def is_empty(folder_path):
     items = os.listdir(folder_path)
 
@@ -123,5 +130,6 @@ def is_empty(folder_path):
         return True
     else:
         return False
+
 
 main()
