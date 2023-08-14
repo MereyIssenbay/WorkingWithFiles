@@ -10,7 +10,8 @@ def main():
               "5.Folder list\n"
               "6.Replace file\n"
               "7.Replace folder\n"
-              "8.Quit")
+              "8.Set limit\n"
+              "9.Quit")
         try:
             opp = int(input("Choose the operation: "))
             match opp:
@@ -40,6 +41,10 @@ def main():
                     destination = input("Give the destination name: ").strip(" ")
                     replace_folder(folder_name, destination)
                 case 8:
+                    folder_name = input("Give the folder name: ").strip(" ")
+                    limit = int(input("Give the limit size: ").strip(" "))
+                    set_limit(folder_name,limit)
+                case 9:
                     print("Good bye!")
                     print("-" * 30)
                     return False
@@ -49,7 +54,7 @@ def main():
             print("You need to write integer number of operation.")
             print("-" * 30)
 
-
+folder_limits = {}
 def create_file(file_name, wr):
     file = open(f"{file_name}.txt", "w")
     file.write(wr)
@@ -103,13 +108,23 @@ def list_folder(folder_name):
     return None
 
 def replace_file(file_name, destination):
-    folder_path = find_folder("D:\\Python\\test", destination)
+    destination_path = find_folder("D:\\Python\\test", destination)
     file_path = find_file("D:\\Python\\test", file_name)
-    if folder_path and file_path:
-        shutil.move(file_path, folder_path)
-        print("File replaced successfully!")
+    if destination_path and file_path:
+        if has_limit(destination):
+            destination_size = get_folder_size(destination_path)
+            limit = get_limit(destination)
+            if destination_size > limit:
+                print("Warning: Folder size exceeds the limit. You can not add the file. ")
+                print("-" * 30)
+            else:
+                shutil.move(file_path, destination_path)
+                print("File replaced successfully!")
+        else:
+            shutil.move(file_path, destination_path)
+            print("File replaced successfully!")
     else:
-        print(folder_path)
+        print(destination_path)
         print(file_path)
         print("The destination or file is not existing.")
         print("-" * 30)
@@ -119,15 +134,48 @@ def replace_folder(folder_name, destination):
     folder_path = find_folder("D:\\Python\\test", folder_name)
     destination_path = find_folder("D:\\Python\\test", destination)
     if folder_path and destination_path:
-        shutil.move(folder_path, destination_path)
-        print("Folder replaced successfully!")
-        print("-" * 30)
+        if has_limit(destination):
+            destination_size = get_folder_size(destination_path)
+            limit = get_limit(destination)
+            if destination_size > limit:
+                print("Warning: Folder size exceeds the limit. You can not add the folder. ")
+                print("-" * 30)
+            else:
+                shutil.move(folder_path, destination_path)
+                print("Folder replaced successfully!")
+                print("-" * 30)
+        else:
+            shutil.move(folder_path, destination_path)
+            print("Folder replaced successfully!")
+            print("-" * 30)
     else:
         print(folder_path)
         print(destination_path)
         print("The destination or folder is not existing.")
         print("-" * 30)
     return None
+
+def set_limit(folder_name, limit):
+    folder_path = find_folder("D:\\Python\\test", folder_name)
+    folder_size = get_folder_size(folder_path)
+    if folder_path:
+        if folder_size > limit:
+            print("Warning: Current folder size exceeds the limit. Limit cannot be set.")
+            print("-" * 30)
+        else:
+            folder_limits[folder_name] = limit
+            print(f"Limit of {limit} bytes set successfully for folder {folder_name}.")
+            print("-" * 30)
+    else:
+        print(f"Folder '{folder_name}' not found.")
+        print("-" * 30)
+
+
+def has_limit(folder_name):
+    return folder_name in folder_limits
+
+def get_limit(folder_name):
+    return folder_limits.get(folder_name)
 
 def find_folder(start_dir, folder_name):
     for entry in os.scandir(start_dir):
@@ -149,19 +197,21 @@ def find_file(start_dir, file_name):
                 return result
     return None
 
-
-def get_folder_size(folder_path):
-    total_size = 0
-    for dirpath, dirnames, filenames in os.walk(folder_path):
-        for filename in filenames:
-            file_path = os.path.join(dirpath, filename)
-            total_size += os.path.getsize(file_path)
-    return total_size
-
-
 def list_info(folder_path):
+    folder_name = os.path.basename(folder_path)
     print(f"Folder: {folder_path}")
     print(f"Total folder size: {get_folder_size(folder_path)} bytes")
+    if has_limit(folder_name):
+        folder_size = get_folder_size(folder_path)
+        limit = get_limit(folder_name)
+        print(f"Size limit: {limit} bytes")
+        print("-" * 30)
+        if folder_size > limit:
+            print("Warning: Folder size exceeds the limit.")
+            print("-" * 30)
+    else:
+        print("Folder size is within the limit.")
+        print("-" * 30)
     print("Files:")
 
     for dirpath, dirnames, filenames in os.walk(folder_path):
@@ -185,6 +235,15 @@ def list_info(folder_path):
             print(f"File creation time: {dir_creation_time}")
             print("-" * 30)
     return None
+
+def get_folder_size(folder_path):
+    total_size = 0
+    for dirpath, dirnames, filenames in os.walk(folder_path):
+        for filename in filenames:
+            file_path = os.path.join(dirpath, filename)
+            total_size += os.path.getsize(file_path)
+    return total_size
+
 def is_empty(folder_path):
     items = os.listdir(folder_path)
 
