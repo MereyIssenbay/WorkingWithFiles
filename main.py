@@ -41,11 +41,13 @@ def main():
                     replace_folder(folder_name, destination)
                 case 8:
                     print("Good bye!")
+                    print("-" * 30)
                     return False
                 case _:
                     print("INCORRECT OPTION")
         except ValueError:
             print("You need to write integer number of operation.")
+            print("-" * 30)
 
 
 def create_file(file_name, wr):
@@ -59,12 +61,15 @@ def delete_file(file_name):
     if file_path:
         os.remove(file_path)
         print("File removed.")
+        print("-" * 30)
     else:
         print("This file does not exist.")
+        print("-" * 30)
 
 def create_folder(folder_name):
     os.mkdir(f"D:\\Python\\test\\{folder_name}")
     print("Folder had been created!")
+    print("-" * 30)
     return None
 
 def delete_folder(folder_name):
@@ -73,13 +78,16 @@ def delete_folder(folder_name):
         if is_empty(folder_path):
             os.rmdir(folder_path)
             print("Folder removed.")
+            print("-" * 30)
         else:
             ans = input("Are you sure? Folder is not empty. y/n ").strip(" ")
             if ans == "Y" or ans == "y":
                 shutil.rmtree(folder_path)
                 print("Folder removed.")
+                print("-" * 30)
             else:
                 print("Folder is not removed.")
+                print("-" * 30)
     return None
 
 def list_folder(folder_name):
@@ -91,6 +99,7 @@ def list_folder(folder_name):
         list_info("D:\\Python\\test")
     else:
         print(f"Folder '{folder_name}' not found.")
+        print("-" * 30)
     return None
 
 def replace_file(file_name, destination):
@@ -103,18 +112,21 @@ def replace_file(file_name, destination):
         print(folder_path)
         print(file_path)
         print("The destination or file is not existing.")
+        print("-" * 30)
     return None
 
 def replace_folder(folder_name, destination):
     folder_path = find_folder("D:\\Python\\test", folder_name)
-    folder_path2 = find_folder("D:\\Python\\test", destination)
-    if folder_path and folder_path2:
-        shutil.move(folder_path, folder_path2)
+    destination_path = find_folder("D:\\Python\\test", destination)
+    if folder_path and destination_path:
+        shutil.move(folder_path, destination_path)
         print("Folder replaced successfully!")
+        print("-" * 30)
     else:
         print(folder_path)
-        print(folder_path2)
+        print(destination_path)
         print("The destination or folder is not existing.")
+        print("-" * 30)
     return None
 
 def find_folder(start_dir, folder_name):
