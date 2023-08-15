@@ -1,6 +1,7 @@
 import os
 import shutil
 import datetime
+import pandas as pd
 def main():
     while(True):
         print("1.Create file\n"
@@ -20,26 +21,33 @@ def main():
                     wr = input("And give text that will be recorded to this file: ")
                     create_file(file_name, wr)
                     print("File had been created!")
+                    print("-" * 30)
                 case 2:
                     file_name = input("Which file do you want to delete? ").strip(" ")
                     delete_file(file_name)
+                    print("-" * 30)
                 case 3:
                     folder_name = input("Give a name for folder: ").strip(" ")
                     create_folder(folder_name)
+                    print("-" * 30)
                 case 4:
                     folder_name = input("Which folder do you want to delete?").strip(" ")
                     delete_folder(folder_name)
+                    print("-" * 30)
                 case 5:
                     folder_name = input("Which folder's entries do you want to get? ").strip(" ")
                     list_folder(folder_name)
+                    print("-" * 30)
                 case 6:
                     file_name = input("Give a file name: ").strip(" ")
                     destination = input("Give folder name: ").strip(" ")
                     replace_file(file_name, destination)
+                    print("-" * 30)
                 case 7:
                     folder_name = input("Give the folder name: ").strip(" ")
                     destination = input("Give the destination name: ").strip(" ")
                     replace_folder(folder_name, destination)
+                    print("-" * 30)
                 case 8:
                     folder_name = input("Give the folder name: ").strip(" ")
                     limit = int(input("Give the limit size: ").strip(" "))
@@ -54,7 +62,6 @@ def main():
             print("You need to write integer number of operation.")
             print("-" * 30)
 
-folder_limits = {}
 def create_file(file_name, wr):
     file = open(f"{file_name}.txt", "w")
     file.write(wr)
@@ -66,15 +73,12 @@ def delete_file(file_name):
     if file_path:
         os.remove(file_path)
         print("File removed.")
-        print("-" * 30)
     else:
         print("This file does not exist.")
-        print("-" * 30)
 
 def create_folder(folder_name):
     os.mkdir(f"D:\\Python\\test\\{folder_name}")
     print("Folder had been created!")
-    print("-" * 30)
     return None
 
 def delete_folder(folder_name):
@@ -83,16 +87,13 @@ def delete_folder(folder_name):
         if is_empty(folder_path):
             os.rmdir(folder_path)
             print("Folder removed.")
-            print("-" * 30)
         else:
             ans = input("Are you sure? Folder is not empty. y/n ").strip(" ")
             if ans == "Y" or ans == "y":
                 shutil.rmtree(folder_path)
                 print("Folder removed.")
-                print("-" * 30)
             else:
                 print("Folder is not removed.")
-                print("-" * 30)
     return None
 
 def list_folder(folder_name):
@@ -104,7 +105,6 @@ def list_folder(folder_name):
         list_info("D:\\Python\\test")
     else:
         print(f"Folder '{folder_name}' not found.")
-        print("-" * 30)
     return None
 
 def replace_file(file_name, destination):
@@ -116,7 +116,6 @@ def replace_file(file_name, destination):
             limit = get_limit(destination)
             if destination_size > limit:
                 print("Warning: Folder size exceeds the limit. You can not add the file. ")
-                print("-" * 30)
             else:
                 shutil.move(file_path, destination_path)
                 print("File replaced successfully!")
@@ -127,7 +126,6 @@ def replace_file(file_name, destination):
         print(destination_path)
         print(file_path)
         print("The destination or file is not existing.")
-        print("-" * 30)
     return None
 
 def replace_folder(folder_name, destination):
@@ -139,22 +137,19 @@ def replace_folder(folder_name, destination):
             limit = get_limit(destination)
             if destination_size > limit:
                 print("Warning: Folder size exceeds the limit. You can not add the folder. ")
-                print("-" * 30)
             else:
                 shutil.move(folder_path, destination_path)
                 print("Folder replaced successfully!")
-                print("-" * 30)
         else:
             shutil.move(folder_path, destination_path)
             print("Folder replaced successfully!")
-            print("-" * 30)
     else:
         print(folder_path)
         print(destination_path)
         print("The destination or folder is not existing.")
-        print("-" * 30)
     return None
 
+limit_info = {}
 def set_limit(folder_name, limit):
     folder_path = find_folder("D:\\Python\\test", folder_name)
     folder_size = get_folder_size(folder_path)
@@ -163,7 +158,14 @@ def set_limit(folder_name, limit):
             print("Warning: Current folder size exceeds the limit. Limit cannot be set.")
             print("-" * 30)
         else:
-            folder_limits[folder_name] = limit
+            excel_file = 'D:\\Python\\test\\limit_info.xlsx'
+            df = pd.read_excel(excel_file)
+            add_to_excel(excel_file, folder_name, limit)
+            for index, row in df.iterrows():
+                xl_folder_name = row['keys']
+                xl_limit = row['values']
+                limit_info[xl_folder_name] = xl_limit
+            print(limit_info)
             print(f"Limit of {limit} bytes set successfully for folder {folder_name}.")
             print("-" * 30)
     else:
@@ -172,10 +174,24 @@ def set_limit(folder_name, limit):
 
 
 def has_limit(folder_name):
-    return folder_name in folder_limits
+    excel_file = 'D:\\Python\\test\\limit_info.xlsx'
+    df = pd.read_excel(excel_file)
+    for index, row in df.iterrows():
+        xl_folder_name = row['keys']
+        xl_limit = row['values']
+        limit_info[xl_folder_name] = xl_limit
+    return folder_name in limit_info
 
 def get_limit(folder_name):
-    return folder_limits.get(folder_name)
+    return limit_info.get(folder_name)
+
+
+def add_to_excel(excel_file, folder_name, limit):
+    data = {'keys': [folder_name], 'values': [limit]}
+    data_frame = pd.DataFrame(data)
+    existing_data_frame = pd.read_excel(excel_file)
+    updated_data_frame = pd.concat([existing_data_frame, data_frame], ignore_index=True)
+    updated_data_frame.to_excel(excel_file, index=False)
 
 def find_folder(start_dir, folder_name):
     for entry in os.scandir(start_dir):
