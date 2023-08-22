@@ -3,7 +3,7 @@ import shutil
 from datetime import datetime
 import pandas as pd
 import zipfile
-
+import datetime
 
 def main():
     while True:
@@ -28,6 +28,7 @@ def main():
                     print("File had been created!")
                     print("-" * 30)
                 case 2:
+                    show_files()
                     file_name = input("Which file do you want to delete? ").strip(" ")
                     delete_file(file_name)
                     print("-" * 30)
@@ -109,11 +110,11 @@ def create_file(file_name, wr):
     file = open(f"{file_name}.txt", "w")
     file.write(wr)
     file.close()
-    shutil.move(f"D:\\Python\\{file_name}.txt", "D:\\Python\\test")
+    shutil.move(f"D:\\Python\\{file_name}.txt", 'test')
 
 
 def delete_file(file_name):
-    file_path = find_file("D:\\Python\\test", file_name)
+    file_path = find_file('test', file_name)
     if file_path:
         os.remove(file_path)
         print("File removed.")
@@ -128,7 +129,7 @@ def create_folder(folder_name):
 
 
 def delete_folder(folder_name):
-    folder_path = find_folder("D:\\Python\\test", folder_name)
+    folder_path = find_folder('test', folder_name)
     if folder_path:
         if is_empty(folder_path):
             os.rmdir(folder_path)
@@ -144,20 +145,20 @@ def delete_folder(folder_name):
 
 
 def list_folder(folder_name):
-    folder_path = find_folder("D:\\Python\\test", folder_name)
+    folder_path = find_folder('test', folder_name)
 
     if folder_path:
         list_info(folder_path)
     elif folder_name == "test":
-        list_info("D:\\Python\\test")
+        list_info('test')
     else:
         print(f"Folder '{folder_name}' not found.")
     return None
 
 
 def replace_file(file_name, destination):
-    destination_path = find_folder("D:\\Python\\test", destination)
-    file_path = find_file("D:\\Python\\test", file_name)
+    destination_path = find_folder('test', destination)
+    file_path = find_file('test', file_name)
     if destination_path and file_path:
         if has_limit(destination):
             destination_size = get_folder_size(destination_path)
@@ -178,8 +179,8 @@ def replace_file(file_name, destination):
 
 
 def replace_folder(folder_name, destination):
-    folder_path = find_folder("D:\\Python\\test", folder_name)
-    destination_path = find_folder("D:\\Python\\test", destination)
+    folder_path = find_folder('test', folder_name)
+    destination_path = find_folder('test', destination)
     if folder_path and destination_path:
         if has_limit(destination):
             destination_size = get_folder_size(destination_path)
@@ -203,7 +204,7 @@ limit_info = {}
 
 
 def set_limit(folder_name, limit):
-    folder_path = find_folder("D:\\Python\\test", folder_name)
+    folder_path = find_folder('test', folder_name)
     folder_size = get_folder_size(folder_path)
     if folder_path:
         if folder_size > limit:
@@ -302,15 +303,23 @@ def list_info(folder_path):
             dir_path = os.path.join(dirpath, dirname)
             dir_size = f"{get_folder_size(dir_path)} bytes"
             dir_creation_time = datetime.datetime.fromtimestamp(os.path.getctime(dir_path))
-            print(f"File name: {dirname}")
-            print(f"File size: {dir_size}")
-            print(f"File creation time: {dir_creation_time}")
+            print(f"Folder name: {dirname}")
+            print(f"Folder size: {dir_size}")
+            print(f"Folder creation time: {dir_creation_time}")
             print("-" * 30)
     return None
 
+def show_files():
+    for dirpath, dirnames, filenames in os.walk('test'):
+        for filename in filenames:
+            file_path = os.path.join(dirpath, filename)
+            file_size = os.path.getsize(file_path)
+            print(f"File: {filename}, size: {file_size} bytes")
+            print("-" * 30)
+
 
 def delete_all(folder_name, file_type=None, size=None, creation_time=None):
-    folder_path = find_folder("D:\\Python\\test", folder_name)
+    folder_path = find_folder('test', folder_name)
     if folder_path:
         for dirpath, dirnames, filenames in os.walk(folder_path):
             for filename in filenames:
@@ -329,22 +338,22 @@ def delete_all(folder_name, file_type=None, size=None, creation_time=None):
 
 
 def archive_all(folder_name, file_type=None, size=None, creation_time=None):
-    folder_path = find_folder("D:\\Python\\test", folder_name)
+    folder_path = find_folder('test', folder_name)
     if folder_path:
-        file_zip = zipfile.ZipFile(folder_name, "w")
-        for dirpath, dirnames, filenames in os.walk(folder_path):
-            for filename in filenames:
-                file_path = os.path.join(dirpath, filename)
-                if file_type and not filename.endswith(file_type):
-                    continue
-                if size and os.path.getsize(file_path) < size:
-                    continue
-                if creation_time and os.path.getctime(file_path) > creation_time.timestamp():
-                    continue
-                file_zip.write(file_path, os.path.relpath(file_path, "D:\\Python\\test"),
-                               compress_type=zipfile.ZIP_DEFLATED)
-        file_zip.close()
-        print("Files archived.")
+        zip_file_name = f"{folder_name}.zip"
+        with zipfile.ZipFile(zip_file_name, "w") as file_zip:
+            for dirpath, _, filenames in os.walk(folder_path):
+                for filename in filenames:
+                    file_path = os.path.join(dirpath, filename)
+                    if file_type and not filename.endswith(file_type):
+                        continue
+                    if size and os.path.getsize(file_path) < size:
+                        continue
+                    if creation_time and os.path.getctime(file_path) > creation_time.timestamp():
+                        continue
+                    file_zip.write(file_path, os.path.relpath(file_path, folder_path),
+                                   compress_type=zipfile.ZIP_DEFLATED)
+            print("Files archived.")
     else:
         print("Folder not found.")
 
