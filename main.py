@@ -7,7 +7,7 @@ import datetime
 
 
 def main():
-    if not os.path.exists('test'): #fix
+    if not os.path.exists('test'):
         os.mkdir('test')
 
     excel_file = 'D:\\Python\\test\\limit_info.xlsx'
