@@ -97,16 +97,20 @@ def main():
                     if criteria == 1:
                         file_type = input("Give the file type: ").strip(" ")
                         archive_all(folder_name, file_type=file_type)
+                        shutil.move(f'D:\\Python\\{folder_name}_archived.zip', 'test')
                     elif criteria == 2:
                         date = input(
                             "Give the date(Year-month-day; all files before this date will be archived): ").strip(" ")
                         creation_time = datetime.strptime(date, "%Y-%m-%d")
                         archive_all(folder_name, creation_time=creation_time)
+                        shutil.move(f'D:\\Python\\{folder_name}_archived.zip', 'test')
                     elif criteria == 3:
                         size = int(input("Give a size(all files larger than this size will be archived) ").strip(" "))
                         archive_all(folder_name, size=size)
+                        shutil.move(f'D:\\Python\\{folder_name}_archived.zip', 'test')
                     else:
                         archive_all(folder_name)
+                        shutil.move(f'D:\\Python\\{folder_name}_archived.zip', 'test')
                     print("-" * 30)
 
                 case 11:
@@ -364,9 +368,9 @@ def delete_all(folder_name, file_type=None, size=None, creation_time=None):
 def archive_all(folder_name, file_type=None, size=None, creation_time=None):
     folder_path = find_folder('test', folder_name)
     if folder_path:
-        zip_file_name = f"{folder_name}.zip"
+        zip_file_name = f"{folder_name}_archived.zip"
         with zipfile.ZipFile(zip_file_name, "w") as file_zip:
-            for dirpath, _, filenames in os.walk(folder_path):
+            for dirpath, dirnames, filenames in os.walk(folder_path):
                 for filename in filenames:
                     file_path = os.path.join(dirpath, filename)
                     if file_type and not filename.endswith(file_type):
