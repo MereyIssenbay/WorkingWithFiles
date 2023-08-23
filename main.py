@@ -5,7 +5,16 @@ import pandas as pd
 import zipfile
 import datetime
 
+
 def main():
+    if not os.path.exists('test'): #fix
+        os.mkdir('test')
+
+    excel_file = 'D:\\Python\\test\\limit_info.xlsx'
+    if not os.path.exists(excel_file):
+        data = {'keys': [], 'values': []}
+        df = pd.DataFrame(data)
+        df.to_excel(excel_file, index=False)
     while True:
         print("1.Create file\n"
               "2.Delete file\n"
@@ -37,10 +46,12 @@ def main():
                     create_folder(folder_name)
                     print("-" * 30)
                 case 4:
+                    show_folders()
                     folder_name = input("Which folder do you want to delete?").strip(" ")
                     delete_folder(folder_name)
                     print("-" * 30)
                 case 5:
+                    show_folders()
                     folder_name = input("Which folder's entries do you want to get? ").strip(" ")
                     list_folder(folder_name)
                     print("-" * 30)
@@ -55,10 +66,12 @@ def main():
                     replace_folder(folder_name, destination)
                     print("-" * 30)
                 case 8:
+                    show_folders()
                     folder_name = input("Give the folder name: ").strip(" ")
                     limit = int(input("Give the limit size: ").strip(" "))
                     set_limit(folder_name, limit)
                 case 9:
+                    show_folders()
                     folder_name = input("Give the folder name: ").strip(" ")
                     criteria = int(input("Choose the criteria:\n1. by file type\n2. by created time\n3. by size "
                                          "\n4. to skip: ").strip(" "))
@@ -77,6 +90,7 @@ def main():
                         delete_all(folder_name)
                     print("-" * 30)
                 case 10:
+                    show_folders()
                     folder_name = input("Give the folder name: ").strip(" ")
                     criteria = int(input("Choose the criteria:\n1. by file type\n2. by created time\n3. by size "
                                          "\n4. to skip: ").strip(" "))
@@ -205,8 +219,8 @@ limit_info = {}
 
 def set_limit(folder_name, limit):
     folder_path = find_folder('test', folder_name)
-    folder_size = get_folder_size(folder_path)
     if folder_path:
+        folder_size = get_folder_size(folder_path)
         if folder_size > limit:
             print("Warning: Current folder size exceeds the limit. Limit cannot be set.")
             print("-" * 30)
@@ -309,12 +323,22 @@ def list_info(folder_path):
             print("-" * 30)
     return None
 
+
 def show_files():
     for dirpath, dirnames, filenames in os.walk('test'):
         for filename in filenames:
             file_path = os.path.join(dirpath, filename)
             file_size = os.path.getsize(file_path)
             print(f"File: {filename}, size: {file_size} bytes")
+            print("-" * 30)
+
+
+def show_folders():
+    for dirpath, dirnames, filenames in os.walk('test'):
+        for dirname in dirnames:
+            dir_path = os.path.join(dirpath, dirname)
+            dir_size = f"{get_folder_size(dir_path)} bytes"
+            print(f"Folder: {dirname} size: {dir_size}")
             print("-" * 30)
 
 
